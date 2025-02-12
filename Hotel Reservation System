@@ -1,0 +1,162 @@
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class Room {
+    int roomNumber;
+    String roomType;
+    boolean isAvailable;
+
+    Room(int roomNumber, String roomType) {
+        this.roomNumber = roomNumber;
+        this.roomType = roomType;
+        this.isAvailable = true;
+    }
+
+    public String toString() {
+        return "Room " + roomNumber + " (" + roomType + ") - " + (isAvailable ? "Available" : "Not Available");
+    }
+}
+
+class Reservation {
+    String guestName;
+    int roomNumber;
+    LocalDate checkInDate;
+    LocalDate checkOutDate;
+
+    Reservation(String guestName, int roomNumber, LocalDate checkInDate, LocalDate checkOutDate) {
+        this.guestName = guestName;
+        this.roomNumber = roomNumber;
+        this.checkInDate = checkInDate;
+        this.checkOutDate = checkOutDate;
+    }
+
+    public String toString() {
+        return "Reservation for " + guestName + " in Room " + roomNumber + " from " + checkInDate + " to " + checkOutDate;
+    }
+}
+
+
+class HotelManager {
+    List<Room> rooms = new ArrayList<>();
+    List<Reservation> reservations = new ArrayList<>();
+
+    void addRoom(int roomNumber, String roomType) {
+        for (Room room : rooms) {
+            if (room.roomNumber == roomNumber) {
+                System.out.println("Error: Room with number " + roomNumber + " already exists!");
+                return;
+            }
+        }
+        rooms.add(new Room(roomNumber, roomType));
+        System.out.println("Room added successfully!");
+    }
+
+    List<Room> searchAvailableRooms(String roomType) {
+        List<Room> availableRooms = new ArrayList<>();
+        for (Room room : rooms) {
+            if (room.isAvailable && room.roomType.equalsIgnoreCase(roomType)) {
+                availableRooms.add(room);
+            }
+        }
+        return availableRooms;
+    }
+
+    boolean makeReservation(String guestName, int roomNumber, LocalDate checkInDate, LocalDate checkOutDate) {
+        for (Room room : rooms) {
+            if (room.roomNumber == roomNumber && room.isAvailable) {
+                room.isAvailable = false;
+                reservations.add(new Reservation(guestName, roomNumber, checkInDate, checkOutDate));
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void displayReservations() {
+        if (reservations.isEmpty()) {
+            System.out.println("No reservations found.");
+        } else {
+            for (Reservation reservation : reservations) {
+                System.out.println(reservation);
+            }
+        }
+    }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        HotelManager manager = new HotelManager();
+
+        while (true) {
+            System.out.println("\nHotel Management System:");
+            System.out.println("1. Add Room");
+            System.out.println("2. Search Available Rooms");
+            System.out.println("3. Make Reservation");
+            System.out.println("4. View Reservations");
+            System.out.println("5. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Room Number: ");
+                    int roomNumber = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    System.out.print("Enter Room Type (single/double): ");
+                    String roomType = scanner.nextLine();
+                    manager.addRoom(roomNumber, roomType);
+                    break;
+
+                case 2:
+                    System.out.print("Enter Room Type to Search: ");
+                    String searchType = scanner.nextLine();
+                    List<Room> availableRooms = manager.searchAvailableRooms(searchType);
+                    System.out.println("Available Rooms:");
+                    if (availableRooms.isEmpty()) {
+                        System.out.println("No available rooms.");
+                    } else {
+                        for (Room room : availableRooms) {
+                            System.out.println(room);
+                        }
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter Guest Name: ");
+                    String guestName = scanner.nextLine();
+                    System.out.print("Enter Room Number for Reservation: ");
+                    int resRoomNumber = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
+                    System.out.print("Enter Check-in Date (yyyy-mm-dd): ");
+                    LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
+                    System.out.print("Enter Check-out Date (yyyy-mm-dd): ");
+                    LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
+
+                    if (manager.makeReservation(guestName, resRoomNumber, checkInDate, checkOutDate)) {
+                        System.out.println("Reservation made successfully!");
+                    } else {
+                        System.out.println("Room is not available or does not exist.");
+                    }
+                    break;
+
+                case 4:
+                    System.out.println("Reservations:");
+                    manager.displayReservations();
+                    break;
+
+                case 5:
+                    System.out.println("Exiting Hotel Management System...");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+}
