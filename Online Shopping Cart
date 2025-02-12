@@ -1,0 +1,96 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Product {
+    String name;
+    double price;
+    int stock;
+
+    public Product(String name, double price, int stock) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+    }
+
+    public Product copy() {
+        return new Product(this.name, this.price, 1);
+    }
+
+    public String toString() {
+        return name + " - $" + price + " (Stock: " + stock + ")";
+    }
+}
+
+class ShoppingCart {
+    ArrayList<Product> cart = new ArrayList<>();
+
+    public void addProduct(String name, double price) {
+        cart.add(new Product(name, price, 1));
+    }
+
+    public void removeProduct(Product product) {
+        for (Product p : cart) {
+            if (p.name.equals(product.name)) {
+                cart.remove(p);
+                break;
+            }
+        }
+    }
+
+    public double getTotal() {
+        return cart.stream().mapToDouble(p -> p.price).sum();
+    }
+
+    public void displayCart() {
+        if (cart.isEmpty()) {
+            System.out.println("Cart is empty");
+        } else {
+            for (Product p : cart) {
+                System.out.println(p.name + " - $" + p.price);
+            }
+            System.out.println("Total: $" + getTotal());
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ShoppingCart cart = new ShoppingCart();
+
+        while (true) {
+            System.out.println("\n1. Add Product to Cart\n2. Remove Product from Cart\n3. View Cart\n4. Checkout\n5. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter product name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter product price: ");
+                    double price = scanner.nextDouble();
+                    cart.addProduct(name, price);
+                    break;
+                case 2:
+                    System.out.print("Enter product name to remove: ");
+                    String removeName = scanner.nextLine();
+                    cart.removeProduct(new Product(removeName, 0, 0));
+                    break;
+                case 3:
+                    cart.displayCart();
+                    break;
+                case 4:
+                    System.out.println("Purchase Completed! Total: $" + cart.getTotal());
+                    cart = new ShoppingCart(); 
+                    break;
+                case 5:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid option");
+            }
+        }
+    }
+}
