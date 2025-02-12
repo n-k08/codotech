@@ -1,0 +1,41 @@
+import java.util.Scanner;
+
+public class Main {
+    public Main() {
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of students: ");
+        int numStudents = scanner.nextInt();
+        int[] marks = new int[numStudents];
+
+        int total;
+        for(total = 0; total < numStudents; ++total) {
+            System.out.print("Enter marks for student " + (total + 1) + ": ");
+            marks[total] = scanner.nextInt();
+        }
+
+        total = 0;
+        int highest = marks[0];
+        int lowest = marks[0];
+
+        for(int i = 0; i < numStudents; ++i) {
+            total += marks[i];
+            if (marks[i] > highest) {
+                highest = marks[i];
+            }
+
+            if (marks[i] < lowest) {
+                lowest = marks[i];
+            }
+        }
+
+        double average = (double)total / (double)numStudents;
+        System.out.println("\nResults:");
+        System.out.println("Average marks: " + average);
+        System.out.println("Highest marks: " + highest);
+        System.out.println("Lowest marks: " + lowest);
+        scanner.close();
+    }
+}
